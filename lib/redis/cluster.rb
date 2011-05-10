@@ -47,6 +47,9 @@ class Redis
             puts "Link: #{@links[instance]}"
             begin
                 reply = @links[instance].send(*args)
+                if slot and !@slots[slot]
+                    @slots[slot] = instance
+                end
             rescue
                 err = $!.to_s
                 if err[0..4] == 'MOVED'
@@ -60,7 +63,6 @@ class Redis
                     raise $!
                 end
             end
-            puts reply
         end
 
         def method_missing(*args)
