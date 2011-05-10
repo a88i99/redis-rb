@@ -49,6 +49,7 @@ class Redis
                 if slot and !@slots[slot]
                     @slots[slot] = instance
                 end
+                return reply
             rescue
                 err = $!.to_s
                 if err[0..4] == 'MOVED'
@@ -65,7 +66,7 @@ class Redis
         end
 
         def method_missing(*args)
-            call_with_slot(nil,args)
+            return call_with_slot(nil,args)
         end
     end
 end
@@ -111,5 +112,5 @@ crc
 end
 
 cluster = Redis::Cluster.new(%w{127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381})
-cluster.incr('a')
-cluster.incr('a')
+puts cluster.incr('a')
+puts cluster.incr('a')
