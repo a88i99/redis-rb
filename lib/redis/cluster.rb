@@ -25,6 +25,10 @@ class Redis
             case cmd
                 when "incr"
                     return slot_from_key(args[1])
+                when "get"
+                    return slot_from_key(args[1])
+                when "set"
+                    return slot_from_key(args[1])
                 else
                     return nil
             end
@@ -114,3 +118,7 @@ end
 cluster = Redis::Cluster.new(%w{127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381})
 puts cluster.incr('a')
 puts cluster.incr('a')
+
+(0..10000).each{|k|
+    cluster.set("key:#{k}","myvalue")
+}
