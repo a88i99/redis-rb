@@ -24,7 +24,6 @@ class Redis
             cmd = args[0].to_s.downcase
             case cmd
                 when "incr"
-                    puts slot_from_key(args[1].to_s)
                     return slot_from_key(args[1])
                 else
                     return nil
@@ -38,13 +37,13 @@ class Redis
             else
                 instance = @entrypoints[rand(@entrypoints.length)]
             end
-            puts "Using instance #{instance}"
+            # puts "Using instance #{instance}"
             if @links[instance] == nil
                 host,port = instance.split(':')
                 link = Redis.new(:host => host, :port => port)
                 @links[instance] = link
             end
-            puts "Link: #{@links[instance]}"
+            # puts "Link: #{@links[instance]}"
             begin
                 reply = @links[instance].send(*args)
                 if slot and !@slots[slot]
@@ -57,7 +56,7 @@ class Redis
                     slot = parts[1].to_i
                     instance = parts[2]
                     @slots[slot] = instance
-                    puts "Moved into #{slot} (#{instance})"
+                    # puts "Moved into #{slot} (#{instance})"
                     return call_with_slot(slot,args)
                 else
                     raise $!
