@@ -55,13 +55,14 @@ class Redis
                 end
                 return reply
             rescue
+                puts "redir (#{@slots.length} known slots)"
                 err = $!.to_s
-                if err[0..4] == 'MOVED'
+                if err[0..4] == 'MOVED' || err[0..2] == 'ASK'
                     parts = err.split(" ")
                     slot = parts[1].to_i
                     instance = parts[2]
                     @slots[slot] = instance
-                    # puts "Moved into #{slot} (#{instance})"
+                    puts "Moved into #{slot} (#{instance})"
                     return call_with_slot(slot,args)
                 else
                     raise $!
@@ -119,6 +120,6 @@ cluster = Redis::Cluster.new(%w{127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381})
 puts cluster.incr('a')
 puts cluster.incr('a')
 
-(0..10000).each{|k|
+(0..100000).each{|k|
     cluster.set("key:#{k}","myvalue")
 }
